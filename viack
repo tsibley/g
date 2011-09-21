@@ -1,0 +1,13 @@
+#!/bin/bash
+grabnext=0
+opts=''
+for arg; do
+    if [[ $grabnext != 0 || ! "$arg" =~ ^- ]]; then
+        opts="+0 +/$arg"
+        break
+    elif [[ "$arg" == "--" ]]; then
+        grabnext=1
+    fi
+done
+
+vim $opts $(ack -l "$@")
