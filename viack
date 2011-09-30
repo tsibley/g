@@ -3,7 +3,11 @@ grabnext=0
 opts=''
 for arg; do
     if [[ $grabnext != 0 || ! "$arg" =~ ^- ]]; then
-        opts="+0 +/\\v$arg"
+        # Try to make vim's magic mode more like Perl's standard regexes
+        # Magic chars gleaned from :help magic, and the most common problem
+        # characters are < and >
+        pattern=$(echo -n "$arg" | perl -pe 's/([<>=@!%])/\\$1/g')
+        opts="+0 +/\\v$pattern"
         break
     elif [[ "$arg" == "--" ]]; then
         grabnext=1
