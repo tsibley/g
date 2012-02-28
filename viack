@@ -14,4 +14,11 @@ for arg; do
     fi
 done
 
-vim "$opts" $(ack -l "$@")
+files=$(ack -l "$@")
+
+if [[ $? == 0 ]]; then
+    vim "$opts" $files
+else
+    echo No matches to open.
+    exit 1
+fi
