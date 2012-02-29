@@ -35,7 +35,7 @@ if ($pid) {
 
 if (@files) {
     exec vim => @vimopts, "--", @files
-        or die "Can't exec vim: $!";
+        or die "Can't exec vim. $!";
 } else {
     die "No matches to open.\n";
 }
