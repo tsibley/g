@@ -1,24 +1,41 @@
-#!/bin/bash
-grabnext=0
-opts=''
-for arg; do
-    if [[ $grabnext != 0 || ! "$arg" =~ ^- ]]; then
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+my ($grabnext, @vimopts, @files);
+
+# Extract the ack pattern to use when spawning vim
+for (@ARGV) {
+    if ($grabnext or not /^-/) {
         # Try to make vim's magic mode more like Perl's standard regexes
         # Magic chars gleaned from :help magic, and the most common problem
         # characters are < and >
-        pattern=$(echo -n "$arg" | perl -pe 's{([<>=@!%/&])}{\\$1}g')
-        opts="+0 +/\\v$pattern"
-        break
-    elif [[ "$arg" == "--" ]]; then
-        grabnext=1
-    fi
-done
+        my $vimpat = $_;
+           $vimpat =~ s{([<>=@!%/&])}{\\$1}g;
+        push @vimopts, '+1', '+/\v'.$vimpat;
+        last;
+    }
+    elsif (/^--$/) {
+        $grabnext = 1;
+    }
+}
 
-files=$(ack -l "$@")
+# Capture output without dealing with shell escaping
+my $pid = open my $kid, "-|";
+die "Can't fork: $!" unless defined $pid;
 
-if [[ $? == 0 ]]; then
-    vim "$opts" $files
-else
-    echo No matches to open.
-    exit 1
-fi
+if ($pid) {
+    @files = <$kid>;
+    chomp for @files;
+    close $kid;
+} else {
+    exec ack => '-l', @ARGV
+        or die "Can't exec ack: $!";
+}
+
+if (@files) {
+    exec vim => @vimopts, "--", @files
+        or die "Can't exec vim: $!";
+} else {
+    die "No matches to open.\n";
+}
