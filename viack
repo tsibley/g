@@ -12,6 +12,7 @@ for (@ARGV) {
         # characters are < and >
         my $vimpat = $_;
            $vimpat =~ s{([<>=@!%/&])}{\\$1}g;
+           $vimpat =~ s{\\b}{\\W\\@=}g; # translate Perl's \b to \W\@= for vim
         push @vimopts, '+1', '+/\v'.$vimpat;
         last;
     }
