@@ -1,0 +1,6 @@
+#!/bin/bash
+#
+# This isn't really ack, of course, but it's git grep with Perl regexps and
+# auto-opening files in vim with the search prerun.
+#
+git grep --perl-regexp --open-files-in-pager=vi "$@"
