@@ -2,6 +2,8 @@
 use strict;
 use warnings;
 
+use File::Basename qw(basename);
+
 my ($grabnext, @vimopts, @files);
 
 # Extract the ack pattern to use when spawning vim
@@ -31,8 +33,10 @@ if ($pid) {
     chomp for @files;
     close $kid;
 } else {
-    exec ack => '-l', @ARGV
-        or die "Can't exec ack: $!";
+    my ($invoked_as) = basename($0) =~ /^vi(.+)/;
+    my $ack = $ENV{VIACK_GREP} || $invoked_as || 'ack';
+    exec $ack => '-l', @ARGV
+        or die "Can't exec $ack: $!";
 }
 
 if (@files) {
