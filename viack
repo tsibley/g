@@ -33,10 +33,18 @@ if ($pid) {
     chomp for @files;
     close $kid;
 } else {
-    my ($invoked_as) = basename($0) =~ /^vi(.+)/;
-    my $ack = $ENV{VIACK_GREP} || $invoked_as || 'ack';
-    exec $ack => '-l', @ARGV
-        or die "Can't exec $ack: $!";
+    my ($via_git, $invoked_as) = basename($0) =~ /^(git-)?vi(.+)/;
+    my $grep = ($via_git ? undef : $ENV{VIACK_GREP}) || $invoked_as || 'ack';
+
+    my @opts = qw( -l );
+
+    # git vigrep
+    if ($via_git) {
+        unshift @opts, "grep", "--perl-regexp";
+        $grep = "git";
+    }
+    exec $grep => @opts, @ARGV
+        or die "Can't exec $grep: $!";
 }
 
 if (@files) {
