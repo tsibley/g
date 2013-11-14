@@ -1,10 +1,13 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
+use open qw/ :std :encoding(UTF-8) /;
 
 use File::Basename qw(basename);
+use File::Temp qw(tempfile);
+use List::MoreUtils qw(uniq);
 
-my ($grabnext, @vimopts, @files);
+my ($grabnext, @vimopts, @hits);
 
 # Extract the ack pattern to use when spawning vim
 for (@ARGV) {
@@ -29,26 +32,33 @@ my $pid = open my $kid, "-|";
 die "Can't fork: $!" unless defined $pid;
 
 if ($pid) {
-    @files = <$kid>;
-    chomp for @files;
+    @hits = <$kid>;
+    chomp for @hits;
     close $kid;
 } else {
     my ($via_git, $invoked_as) = basename($0) =~ /^(git-)?vi(.+)/;
     my $grep = ($via_git ? undef : $ENV{VIACK_GREP}) || $invoked_as || 'ack';
 
-    my @opts = qw( -l );
+    # ack and ag default to line numbers and headings
+    my @opts = qw( --noheading --nobreak --nocolor );
 
     # git vigrep
     if ($via_git) {
-        unshift @opts, "grep", "--perl-regexp";
+        @opts = ("grep", "-H", "--perl-regexp");
         $grep = "git";
     }
     exec $grep => @opts, @ARGV
         or die "Can't exec $grep: $!";
 }
 
-if (@files) {
-    exec vim => @vimopts, "--", @files
+if (@hits) {
+    my ($tmpfh, $tmpfn) = tempfile( "viack-XXXXX", TMPDIR => 1 );
+    print { $tmpfh } "$_\n" for @hits;
+    close $tmpfh;
+
+    my @files = uniq map { /^(.+?):\d/; $1 } @hits;
+
+    exec "vim", @vimopts, "+cfile $tmpfn", "--", @files
         or die "Can't exec vim. $!";
 } else {
     die "No matches to open.\n";
