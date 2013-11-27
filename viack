@@ -44,7 +44,7 @@ if ($pid) {
 
     # git vigrep
     if ($via_git) {
-        @opts = ("grep", "-H", "--perl-regexp");
+        @opts = ("grep", "-HI", "--perl-regexp");
         $grep = "git";
     }
     exec $grep => @opts, @ARGV
