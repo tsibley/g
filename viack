@@ -7,15 +7,17 @@ use File::Basename qw(basename);
 use File::Temp qw(tempfile);
 use List::MoreUtils qw(uniq);
 
-my ($grabnext, @vimopts, @hits);
+my ($pattern, $grabnext, @vimopts, @hits);
 
 # Extract the ack pattern to use when spawning vim
 for (@ARGV) {
     if ($grabnext or not /^-/) {
+        $pattern = $_;
+
         # Try to make vim's magic mode more like Perl's standard regexes
         # Magic chars gleaned from :help magic, and the most common problem
         # characters are < and >
-        my $vimpat = $_;
+        my $vimpat = $pattern;
            $vimpat =~ s{([<>=@!%/&])}{\\$1}g;
            $vimpat =~ s{(^|(?<=[^\\]))\\b}{\\W\\@=}g; # translate Perl's \b to \W\@= for vim
            # see http://code.google.com/p/re2/wiki/Syntax
@@ -46,6 +48,9 @@ if ($pid) {
     if ($via_git) {
         @opts = ("grep", "-HI", "--perl-regexp");
         $grep = "git";
+
+        # Emulate smartcase for git grep
+        push @opts, "-i" if $pattern eq lc $pattern;
     }
     exec $grep => @opts, @ARGV
         or die "Can't exec $grep: $!";
