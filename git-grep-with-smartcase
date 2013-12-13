@@ -1,0 +1,15 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+my ($pattern, $grabnext);
+for (@ARGV) {
+    if ($grabnext or not /^-/) {
+        $pattern = $_;
+        last;
+    } elsif (/^--$/) {
+        $grabnext = 1;
+    }
+}
+exec "git", "grep", ($pattern eq lc $pattern ? "-i" : ()), @ARGV
+    or die "exec failed: $!";
