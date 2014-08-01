@@ -20,6 +20,17 @@ for (@ARGV) {
         my $vimpat = $pattern;
            $vimpat =~ s{([<>=@!%/&])}{\\$1}g;
            $vimpat =~ s{(^|(?<=[^\\]))\\b}{\\W\\@=}g; # translate Perl's \b to \W\@= for vim
+
+           # Translate Perl's lookaheads and lookbehinds for vim:
+           #    (?=...) and (?!...) to (...)@= and (...)@!
+           #
+           # It's a little uglier because this is after escaping metachars
+           # above.  The matching of the actual pattern part will fail if it
+           # contains a ) in the middle as .+? is non-greedy and we're not
+           # doing balanced matching.  It's better to fail this way than to
+           # fail by gobbling up too much.
+           $vimpat =~ s{\(\?(?:\\(<?))?(?:\\([=!]))(.+?)\)}{($3)\@$1$2}g;
+
            # see http://code.google.com/p/re2/wiki/Syntax
         push @vimopts, '+1', '+/\v'.$vimpat;
         last;
