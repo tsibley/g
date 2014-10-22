@@ -5,7 +5,6 @@ use open qw/ :std :encoding(UTF-8) /;
 
 use File::Basename qw(basename);
 use File::Temp qw(tempfile);
-use List::MoreUtils qw(uniq);
 
 my ($pattern, $grabnext, @vimopts, @hits);
 
@@ -72,7 +71,8 @@ if (@hits) {
     print { $tmpfh } "$_\n" for @hits;
     close $tmpfh;
 
-    my @files = uniq map { /^(.+?):\d/; $1 } @hits;
+    my %seen;
+    my @files = grep { not $seen{$_}++ } map { /^(.+?):\d/; $1 } @hits;
 
     exec "vim", @vimopts, "+cfile $tmpfn", "--", @files
         or die "Can't exec vim. $!";
