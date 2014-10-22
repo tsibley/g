@@ -42,6 +42,14 @@ I also like to make the default filename and line number colors match ack's:
     git config color.grep.filename "green bold"
     git config color.grep.linenumber blue
 
+# vim `:grep` support with git-grep-or-ag
+
+If you find yourself using the `:grep` command to search files and load up the
+quickfix list from within vim, you opportunistically use `git grep` and
+fallback to `ag` if not in a git repo.  In your `.vimrc`, put:
+
+    set grepprg=git-grep-or-ag
+
 # Installation
 
 viack requires only Perl and the modules that ship with core Perl.  Of course,
