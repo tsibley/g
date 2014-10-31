@@ -11,5 +11,14 @@ for (@ARGV) {
         $grabnext = 1;
     }
 }
-exec "git", "grep", ($pattern eq lc $pattern ? "-i" : ()), @ARGV
+
+# Accept a --no-S or --no-smart-case flag to disable our smarts
+my @args = grep { not /^--no-(S|smart-?case)$/ } @ARGV;
+my $do_smart_case = @ARGV == @args;
+
+# Prepend -i to match case-insensitively when the pattern contains no uppercase
+unshift @args, "-i"
+    if $pattern eq lc $pattern and $do_smart_case;
+
+exec "git", "grep", @args
     or die "exec failed: $!";
