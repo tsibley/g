@@ -45,7 +45,7 @@ I also like to make the default filename and line number colors match ack's:
 # vim `:grep` support with git-grep-or-ag
 
 If you find yourself using the `:grep` command to search files and load up the
-quickfix list from within vim, you opportunistically use `git grep` and
+quickfix list from within vim, you can opportunistically use `git grep` and
 fallback to `ag` if not in a git repo.  In your `.vimrc`, put:
 
     set grepprg=git-grep-or-ag
