@@ -34,8 +34,8 @@ Adding two git aliases `ack` and `ag` to complement `viack` and `viag` is
 suggested for maximal convenience and the least amount of finger retraining.
 You can do so by running:
 
-    git alias ack "grep-with-smartcase -I --perl-regexp --break --heading --line-number"
-    git alias ag  "grep-with-smartcase -I --perl-regexp --break --heading --line-number"
+    git config --global alias.ack "grep-with-smartcase -I --perl-regexp --break --heading --line-number"
+    git config --global alias.ag  "grep-with-smartcase -I --perl-regexp --break --heading --line-number"
 
 I also like to make the default filename and line number colors match ack's:
 
