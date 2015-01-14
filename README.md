@@ -39,8 +39,8 @@ You can do so by running:
 
 I also like to make the default filename and line number colors match ack's:
 
-    git config color.grep.filename "green bold"
-    git config color.grep.linenumber blue
+    git config --global color.grep.filename "green bold"
+    git config --global color.grep.linenumber blue
 
 # vim `:grep` support with git-grep-or-ag
 
