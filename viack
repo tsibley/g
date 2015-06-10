@@ -50,17 +50,25 @@ if ($pid) {
 } else {
     my ($via_git, $invoked_as) = basename($0) =~ /^(git-)?vi(.+)/;
     my $grep = ($via_git ? "git" : $ENV{VIACK_GREP}) || $invoked_as || 'ack';
+    my @opts;
 
-    # ack and ag default to line numbers and headings
-    my @opts = qw( --noheading --nobreak --nocolor );
-
-    # git vigrep
     if ($via_git) {
+        # invoked as git-viack so use git grep
         @opts = ("grep", "-HI", "--perl-regexp");
 
-        # Emulate smartcase for git grep
+        # Emulate smartcase (poorly)
         push @opts, "-i" if $pattern eq lc $pattern;
+    } elsif ($grep eq "grep") {
+        @opts = ("-rHIP", "--color=never", "--line-number");
+        @ARGV = (".") unless @ARGV;
+
+        # Emulate smartcase (poorly)
+        push @opts, "-i" if $pattern eq lc $pattern;
+    } else {
+        # ack and ag default to line numbers and headings
+        @opts = qw( --noheading --nobreak --nocolor );
     }
+
     exec $grep => @opts, @ARGV
         or die "Can't exec $grep: $!";
 }
