@@ -49,7 +49,7 @@ if ($pid) {
     close $kid;
 } else {
     my ($via_git, $invoked_as) = basename($0) =~ /^(git-)?vi(.+)/;
-    my $grep = ($via_git ? undef : $ENV{VIACK_GREP}) || $invoked_as || 'ack';
+    my $grep = ($via_git ? "git" : $ENV{VIACK_GREP}) || $invoked_as || 'ack';
 
     # ack and ag default to line numbers and headings
     my @opts = qw( --noheading --nobreak --nocolor );
@@ -57,7 +57,6 @@ if ($pid) {
     # git vigrep
     if ($via_git) {
         @opts = ("grep", "-HI", "--perl-regexp");
-        $grep = "git";
 
         # Emulate smartcase for git grep
         push @opts, "-i" if $pattern eq lc $pattern;
