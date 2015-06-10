@@ -30,6 +30,10 @@ for (@ARGV) {
            # fail by gobbling up too much.
            $vimpat =~ s{\(\?(?:\\(<?))?(?:\\([=!]))(.+?)\)}{($3)\@$1$2}g;
 
+           # Translate the two most common non-greedy modifiers in Perl to Vim.
+           $vimpat =~ s/\Q*?/{-}/g;
+           $vimpat =~ s/\Q+?/{-1,}/g;
+
            # see http://code.google.com/p/re2/wiki/Syntax
         push @vimopts, '+1', '+/\v'.$vimpat;
         last;
