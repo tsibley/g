@@ -79,6 +79,7 @@ if ($pid) {
 
 if (@hits) {
     my ($tmpfh, $tmpfn) = tempfile( "viack-XXXXX", TMPDIR => 1 );
+    binmode $tmpfh, ":encoding(UTF-8)";
     print { $tmpfh } "$_\n" for @hits;
     close $tmpfh;
 
