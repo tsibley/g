@@ -86,7 +86,7 @@ if (@hits) {
     my %seen;
     my @files = grep { not $seen{$_}++ } map { /^(.+?):\d/; $1 } @hits;
 
-    exec "vim", @vimopts, "+cfile $tmpfn", "--", @files
+    exec "vim", @vimopts, "+set errorformat=%f:%l:%m", "+cfile $tmpfn", "--", @files
         or die "Can't exec vim. $!";
 } else {
     die "No matches to open.\n";
