@@ -34,7 +34,7 @@ for (@ARGV) {
            $vimpat =~ s/\Q*?/{-}/g;
            $vimpat =~ s/\Q+?/{-1,}/g;
 
-           # see http://code.google.com/p/re2/wiki/Syntax
+           # see https://github.com/google/re2/wiki/Syntax
         push @vimopts, '+1', '+/\v'.$vimpat;
         last;
     }
