@@ -121,16 +121,22 @@ sub exec_grep {
     my @args = @_;
     my $pattern = extract_pattern(@args);
     my $for_humans = -t STDOUT;
+    my $search_stdin = not -t STDIN;
     my $in_git_repo = `git rev-parse --git-dir 2>/dev/null`;
+    my $use_git_grep = (not $search_stdin and $in_git_repo);
 
     my @grep = (
-        ($in_git_repo
+        ($use_git_grep
             ? "git"
             : ()),
 
         "grep",
         "-HI",
-        "--recursive",
+
+        ((not $search_stdin)
+            ? "--recursive"
+            : ()),
+
         "--perl-regexp",
         "--line-number",
 
@@ -138,7 +144,7 @@ sub exec_grep {
             ? "--color=always"
             : "--color=never"),
 
-        ($in_git_repo
+        ($use_git_grep
             ? $for_humans
                 ? ("--heading",
                    "--break")
