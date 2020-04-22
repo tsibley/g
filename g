@@ -133,8 +133,8 @@ sub exec_grep {
         "grep",
         "-HI",
 
-        ((not $search_stdin)
-            ? "--recursive"
+        ((not $search_stdin and not $use_git_grep)
+            ? "--dereference-recursive"
             : ()),
 
         "--perl-regexp",
