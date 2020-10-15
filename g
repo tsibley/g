@@ -137,6 +137,10 @@ sub exec_grep {
             ? "--dereference-recursive"
             : ()),
 
+        ($use_git_grep
+            ? "--recurse-submodules"
+            : ()),
+
         "--perl-regexp",
         "--line-number",
 
