@@ -192,7 +192,8 @@ sub translate_pattern {
        $vimpat =~ s{(^|(?<=[^\\]))\\b}{\\W\\@=}g; # translate Perl's \b to \W\@= for vim
 
        # Translate Perl's lookaheads and lookbehinds for vim:
-       #    (?=...) and (?!...) to (...)@= and (...)@!
+       #    (?=...)  and (?!...)  to (...)@=  and (...)@!
+       #    (?<=...) and (?<!...) to (...)@<= and (...)@<!
        #
        # It's a little uglier because this is after escaping metachars
        # above.  The matching of the actual pattern part will fail if it
