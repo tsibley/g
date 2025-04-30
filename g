@@ -67,6 +67,7 @@ sub main {
 sub print_usage {
     seek DATA, 0, 0;
     while (<DATA>) {
+        next if 1..1;
         if (s/^# ?//) {
             print;
         } else {
