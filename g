@@ -101,10 +101,15 @@ sub exec_vim {
         my %seen;
         my @files = grep { not $seen{$_}++ } map { /^(.+?):\d/; $1 } @hits;
 
+        my $fixed = grep { /^(?:-F|--fixed-strings)$/ } @args;
+        my $pattern = extract_pattern(@args);
+
         my @vim = (
             "vim",
             "+1",
-            '+/\v' . translate_pattern(extract_pattern(@args)),
+            ($fixed
+                ? ('+/\V' . $pattern =~ s,(?=[/\\]),\\,gr)
+                : ('+/\v' . translate_pattern($pattern))),
             "+set errorformat=%f:%l:%c:%m,%f:%l:%m",
             "+cfile $tmpfn",
             "--",
